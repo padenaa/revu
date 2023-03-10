@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css?family=Fjalla+One&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
+
+html{
+    background: #0e2a47;
+}
+
+.image{
+    size: 80%;
+}
+
+textarea::placeholder {
+    color: rgb(148, 148, 148) !important;
+}
+
+.title-font {
+    font-family: 'Fjalla One', sans-serif;
+    color:aliceblue;
+    margin-top: 1.5%;
+}
+
+.source-font{
+    
+    color: aliceblue;
+    font-weight: 100;
+}
+
+.is-dark-blue{
+    background-color: #0e2a47;
+}
+
+.light-blue{
+    background-color: #1d4068d1;
+}
+
+.center {
+    width: 16%;
+    margin-left: 42%;
+    margin-right: 42%;
+}
+
+.submit{
+    text-align: left;
+    width: 15%;
+    margin-bottom: 50px;
+}
+
+.card {
+    margin-left: 20%;
+    margin-right: 20%;
+}
