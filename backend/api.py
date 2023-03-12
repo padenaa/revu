@@ -1,4 +1,5 @@
 import os
+import sys
 import joblib
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -6,22 +7,38 @@ import requests
 from flask_cors import CORS
 import cohere
 
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
 API_KEY = os.getenv("API_KEY")
 co = cohere.Client(API_KEY)
 
+this_dir = os.path.dirname(__file__) # Path to loader.py
+sys.path.append(os.path.join(this_dir, './model/resume-classifier'))
+
+model = joblib.load(f"{this_dir}/model/resume-classifier")
+
+def resume_data(resume):
+    vect = CountVectorizer(max_features=200, stop_words='english')
+    X = vect.fit_transform([resume]) #vectorize by frequency of words
+
+    tfidf = TfidfTransformer()
+    X = tfidf.fit_transform(X) #remove filler words like "the"
+    return X
+
 #find job method
 def get_job(resume):
     #run ml model on resume to get job
-    model = joblib.load('./model/resume-classifier')
-    category_index = model.predict(resume)
+    category_index = model.predict(resume_data(resume))
     category_index = category_index[0]
     categories = ["Advocate", "Arts", "Automation Testing", "Blockchain", "Business Analyst", "Civil Engineer", "Data Science", "Database", "DevOps Engineer", "DotNet Developer", "ETL Developer", 
                   "Electrical Engineering", "HR", "Hadoop", "Health and fitness", "Java Developer", "Mechanical Engineer", "Network Security Engineer",
                   "Operations Manager", "PMO", "Python Developer", "SAP Developer", "Sales", "Testing", "Web Designing"];
     job = categories[category_index]
+    print(job)
     return job
 
 
@@ -34,17 +51,21 @@ def get_recommendations():
     
     resume = request.json['resume']
     job = get_job(resume)
-    prompt = "Give feedback on the quality of this resume belonging to a " + job + ", check if the bullets focus on impact: " + resume
+    prompt = "I'm a " + job + ". Critique my resume, does my experience focus on impact?: \n" + resume
     res = co.generate( 
-        model='xlarge', 
+        model='command-xlarge-nightly', 
         prompt = prompt,
-        max_tokens=40, 
-        temperature=0.8,
+        max_tokens=300,
+        temperature=0.7,
         stop_sequences=["--"]
         )
 
     feedback = res.generations[0].text
     print(feedback)
+    feedback = feedback.split('\n')
+    feedback = feedback[-1]
+    #feedback = "let's pretend that this is the feedback that we receive from the model. bla bla bla yada yada yada"
+    print(feedback)
     return jsonify({"feedback": str(feedback)})
 
-app.run()
+app.run(host="localhost", port=8000)

@@ -9,6 +9,7 @@ html{
     size: 80%;
 }
 
+
 textarea::placeholder {
     color: rgb(148, 148, 148) !important;
 }
@@ -45,7 +46,7 @@ textarea::placeholder {
     margin-bottom: 50px;
 }
 
-.card {
-    margin-left: 20%;
-    margin-right: 20%;
+.card-format {
+    padding: 10px; 
+    margin-right: 10%
 }
