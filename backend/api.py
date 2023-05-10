@@ -51,7 +51,7 @@ def get_recommendations():
     
     resume = request.json['resume']
     job = get_job(resume)
-    prompt = "I'm a " + job + ". Critique my resume, does my experience focus on impact?: \n" + resume
+    prompt = "I'm a " + job + ". Critique my resume, does my experience focus on impact?: \n --k" + resume
     res = co.generate( 
         model='command-xlarge-nightly', 
         prompt = prompt,
@@ -64,7 +64,7 @@ def get_recommendations():
     print(feedback)
     feedback = feedback.split('\n')
     feedback = feedback[-1]
-    #feedback = "let's pretend that this is the feedback that we receive from the model. bla bla bla yada yada yada"
+    
     print(feedback)
     return jsonify({"feedback": str(feedback)})
 
